@@ -25,6 +25,7 @@ const run = async () => {
 
         const db = client.db("assignment-9")
         const userCollection = db.collection("allData")
+        const booking = db.collection('patientData')
 
         app.get("/user", async (req,res) => {
             const cursor = await userCollection.find()
@@ -40,7 +41,23 @@ const run = async () => {
 
         app.post('/booking', async (req,res) => {
             const newPatient = req.body
-            console.log(newPatient)
+            const result = await booking.insertOne(newPatient)
+            res.send(result)
+        })
+
+        app.get('/booking', async (req,res) => {
+            const result = await booking.find().toArray()
+            res.send(result)
+        })
+
+        app.delete('/booking/:id', async (req,res) => {
+            const {id} = req.params
+            const filter ={
+                _id: new ObjectId(id)
+            }
+            const result = await booking.deleteOne(filter)
+            res.json(result)
+            console.log(result)
         })
 
         await client.db("admin").command({ ping: 1 });
