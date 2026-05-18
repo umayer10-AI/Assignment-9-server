@@ -57,7 +57,12 @@ const run = async () => {
             }
             const result = await booking.deleteOne(filter)
             res.json(result)
-            console.log(result)
+        })
+
+        app.get('/booking/:id',async (req,res) => {
+            const {id} = req.params
+            const result = await booking.findOne({_id: new ObjectId(id)})
+            res.send(result)
         })
 
         await client.db("admin").command({ ping: 1 });
