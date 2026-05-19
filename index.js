@@ -19,6 +19,16 @@ const client = new MongoClient(uri, {
     }
 });
 
+const verifyData = async (req,res,next) => {
+    const header = req.headers.authorization
+    if(!header){
+        res.status(401).json({message: "Unauthorized"})
+    }
+    const token = header.split(' ')[1]
+    console.log(token)
+    next()
+}
+
 const run = async () => {
     try {
         await client.connect();
@@ -33,7 +43,7 @@ const run = async () => {
             res.send(result)
         })
 
-        app.get('/user/:id', async (req,res) => {
+        app.get('/user/:id',verifyData , async (req,res) => {
             const {id} = req.params
             const result = await userCollection.findOne({_id: new ObjectId(id)})
             res.send(result)
