@@ -53,7 +53,32 @@ const run = async () => {
         const booking = db.collection('patientData')
 
         app.get("/user", async (req,res) => {
-            const cursor = await userCollection.find()
+
+            const {search} = req.query
+            let cursor;
+
+            if(!search){
+                cursor = await userCollection.find()
+            }
+            else{
+                cursor = await userCollection.find({
+                    $or:[
+                        {
+                            name:{
+                                $regex: search,
+                                $options: 'i'
+                            }
+                        },
+                        {
+                            description:{
+                                $regex: search,
+                                $options: 'i'
+                            }
+                        }
+                    ]
+                })
+            }
+
             const result = await cursor.toArray()
             res.send(result)
         })
@@ -64,7 +89,7 @@ const run = async () => {
             res.send(result)
         })
 
-        app.post('/booking', async (req,res) => {
+        app.post('/booking',verifyData , async (req,res) => {
             const newPatient = req.body
             const result = await booking.insertOne(newPatient)
             res.send(result)
@@ -75,7 +100,7 @@ const run = async () => {
             res.send(result)
         })
 
-        app.delete('/booking/:id', async (req,res) => {
+        app.delete('/booking/:id',verifyData , async (req,res) => {
             const {id} = req.params
             const filter ={
                 _id: new ObjectId(id)
@@ -90,7 +115,7 @@ const run = async () => {
             res.send(result)
         })
 
-        app.patch('/booking/:id', async (req,res) => {
+        app.patch('/booking/:id',verifyData , async (req,res) => {
             const {id} = req.params
             const filter = {
                 _id: new ObjectId(id)
