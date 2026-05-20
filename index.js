@@ -128,7 +128,8 @@ const run = async () => {
         })
 
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
-    } finally {
+    } 
+    finally {
         // await client.close();
     }
 }
